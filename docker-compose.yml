@@ -1,0 +1,17 @@
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - 27017:27017
+    volumes: 
+      - mongodbdata:/data/db
+
+  # catalogservice:
+  #   image: ${DOCKER_REGISTRY-}catalogservice
+  #   build:
+  #     context: .
+  #     dockerfile: Services/CatalogService/Dockerfile
+
+volumes: 
+  mongodbdata:
