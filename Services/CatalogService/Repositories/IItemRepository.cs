@@ -2,6 +2,7 @@
 
 namespace CatalogService.Repositories
 {
+    [Obsolete("This interface is obsolete, use IRepository instead")]
     public interface IItemRepository
     {
         Task<IReadOnlyCollection<Item>> GetAllItemAsync();

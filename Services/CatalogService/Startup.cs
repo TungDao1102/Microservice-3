@@ -1,9 +1,6 @@
-﻿using CatalogService.Data;
-using CatalogService.Repositories;
+﻿using BuildingBlocks.Common.MongoDB;
+using CatalogService.Entities;
 using Microsoft.OpenApi.Models;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
 
 namespace CatalogService
 {
@@ -11,21 +8,10 @@ namespace CatalogService
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            // to use Guid as string in MongoDB instead of binary
-            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+            services.AddMongo(configuration).AddMongoRepository<Item>("Items");
 
-            // use MongoDbService instead
-            //var serviceSettings = configuration.GetSection("ServiceSettings").Get<ServiceSettings>();
-            //services.AddSingleton(ServiceProvider =>
-            //{
-            //    var mongoDbSettings = configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>() ;
-            //    var mongoClient = new MongoClient(mongoDbSettings?.ConnectionString);
-            //    return mongoClient.GetDatabase(serviceSettings?.ServiceName);
-            //});
-
-            services.AddSingleton<MongoDbService>();
-            services.AddScoped<IItemRepository, ItemRepository>();
+            //services.AddSingleton<MongoDbService>();
+            //services.AddScoped<IItemRepository, ItemRepository>();
 
             services.AddControllers(options =>
             {

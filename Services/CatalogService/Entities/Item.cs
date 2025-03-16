@@ -1,6 +1,8 @@
-﻿namespace CatalogService.Entities
+﻿using BuildingBlocks.Common.Abstractions;
+
+namespace CatalogService.Entities
 {
-    public class Item
+    public class Item : IBaseEntity
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;

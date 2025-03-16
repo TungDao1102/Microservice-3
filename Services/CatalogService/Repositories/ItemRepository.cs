@@ -4,6 +4,7 @@ using MongoDB.Driver;
 
 namespace CatalogService.Repositories
 {
+    [Obsolete("This interface is obsolete, use IRepository instead")]
     public class ItemRepository : IItemRepository
     {
         private const string collectionName = "items";

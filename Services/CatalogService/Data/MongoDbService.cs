@@ -1,8 +1,9 @@
-﻿using CatalogService.Settings;
+﻿using BuildingBlocks.Common.Settings;
 using MongoDB.Driver;
 
 namespace CatalogService.Data
 {
+    [Obsolete("This interface is obsolete, use AddMongo method instead")]
     public class MongoDbService
     {
         public IMongoDatabase Database { get; } = default!;

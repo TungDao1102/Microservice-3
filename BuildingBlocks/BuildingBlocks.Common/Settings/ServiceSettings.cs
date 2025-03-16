@@ -1,4 +1,4 @@
-﻿namespace CatalogService.Settings
+﻿namespace BuildingBlocks.Common.Settings
 {
     public class ServiceSettings
     {
