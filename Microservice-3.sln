@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogService", "Services\
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{C5C62539-635E-4001-A0A7-2E2D2A17599F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryService", "Services\InventoryService\InventoryService.csproj", "{39554BC5-2D2D-4062-AD88-185543FD76DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{C5C62539-635E-4001-A0A7-2E2D2A17599F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5C62539-635E-4001-A0A7-2E2D2A17599F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5C62539-635E-4001-A0A7-2E2D2A17599F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39554BC5-2D2D-4062-AD88-185543FD76DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39554BC5-2D2D-4062-AD88-185543FD76DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39554BC5-2D2D-4062-AD88-185543FD76DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39554BC5-2D2D-4062-AD88-185543FD76DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -38,6 +44,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D343AD87-18BD-4F6C-80CB-5EB5A9B0A587} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{98B79AAB-34CC-4ACE-9EF2-32F2C087C2C8} = {927209CC-9FD6-4CE8-A16C-B0FE7F58EF76}
+		{39554BC5-2D2D-4062-AD88-185543FD76DE} = {927209CC-9FD6-4CE8-A16C-B0FE7F58EF76}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {11B16732-52CA-419B-8714-E67ED45448C8}
