@@ -1,4 +1,7 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using BuildingBlocks.Common.MongoDB;
+using InventoryService.Clients;
+using InventoryService.Entities;
+using Microsoft.OpenApi.Models;
 
 namespace InventoryService
 {
@@ -6,6 +9,14 @@ namespace InventoryService
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMongo(configuration)
+                .AddMongoRepository<InventoryItem>("InventoryItems");
+
+            services.AddHttpClient<CatalogClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:5001");
+            });
+
             services.AddControllers(options =>
             {
                 // for do not remove async suffix in action names (controller)
