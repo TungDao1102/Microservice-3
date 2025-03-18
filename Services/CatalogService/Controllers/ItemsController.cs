@@ -10,10 +10,28 @@ namespace CatalogService.Controllers
     [ApiController]
     public class ItemsController(IRepository<Item> itemRepository) : ControllerBase
     {
+        private static int requestCounter = -0;
         [HttpGet("GetAllItem")]
         public async Task<ActionResult<IEnumerable<ItemDto>>> GetAllItemAsync()
         {
+            requestCounter++;
+            Console.WriteLine($"Request {requestCounter}: Starting...");
+
+            if (requestCounter <= 2)
+            {
+                Console.WriteLine($"Request {requestCounter}: Delaying...");
+                await Task.Delay(TimeSpan.FromSeconds(5));
+            }
+
+
+            if (requestCounter <= 4)
+            {
+                Console.WriteLine($"Request {requestCounter}: HTTP 500 (Internal Server Error)...");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
             var items = (await itemRepository.GetAllAsync()).Select(item => item.AsDto());
+            Console.WriteLine($"Request {requestCounter}: HTTP 200 (OK)...");
             return Ok(items);
         }
 

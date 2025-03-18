@@ -2,6 +2,8 @@
 using InventoryService.Clients;
 using InventoryService.Entities;
 using Microsoft.OpenApi.Models;
+using Polly;
+using Polly.Timeout;
 
 namespace InventoryService
 {
@@ -12,10 +14,7 @@ namespace InventoryService
             services.AddMongo(configuration)
                 .AddMongoRepository<InventoryItem>("InventoryItems");
 
-            services.AddHttpClient<CatalogClient>(client =>
-            {
-                client.BaseAddress = new Uri("https://localhost:5001");
-            });
+            AddCatalogClient(services);
 
             services.AddControllers(options =>
             {
@@ -43,6 +42,34 @@ namespace InventoryService
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private static void AddCatalogClient(IServiceCollection services)
+        {
+            // to avoid thundering herd problem
+            Random jitter = new();
+
+            services.AddHttpClient<CatalogClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:5001");
+            })
+            .AddTransientHttpErrorPolicy(builder => builder.Or<TimeoutRejectedException>().WaitAndRetryAsync(
+                5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) + TimeSpan.FromMilliseconds(jitter.Next(0, 1000)),
+                onRetry: (outcome, timespan, retryAttempt) =>
+                {
+                    Console.WriteLine($"Delaying for {timespan.TotalSeconds} seconds, then making retry {retryAttempt}");
+                }))
+            .AddTransientHttpErrorPolicy(builder => builder.Or<TimeoutRejectedException>().CircuitBreakerAsync(
+                3, TimeSpan.FromSeconds(15),
+                onBreak: (outcome, timespan) =>
+                {
+                    Console.WriteLine($"Opening the circuit in {timespan.TotalSeconds} second for {outcome}");
+                },
+                onReset: () =>
+                {
+                    Console.WriteLine($"Closing the circuit...");
+                }))
+             .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(1)); // return time out if request time is more than 1 second
         }
     }
 }
