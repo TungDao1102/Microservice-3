@@ -1,39 +1,51 @@
 ﻿using BuildingBlocks.Common.Abstractions;
+using BuildingBlocks.Common.Contracts;
 using CatalogService.Dtos;
 using CatalogService.Entities;
 using CatalogService.Extensions;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CatalogService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ItemsController(IRepository<Item> itemRepository) : ControllerBase
+    public class ItemsController(IRepository<Item> itemRepository,
+        IPublishEndpoint publishEndpoint) : ControllerBase
     {
-        private static int requestCounter = -0;
+        private static int requestCounter = 0;
+
         [HttpGet("GetAllItem")]
         public async Task<ActionResult<IEnumerable<ItemDto>>> GetAllItemAsync()
         {
-            requestCounter++;
-            Console.WriteLine($"Request {requestCounter}: Starting...");
-
-            if (requestCounter <= 2)
-            {
-                Console.WriteLine($"Request {requestCounter}: Delaying...");
-                await Task.Delay(TimeSpan.FromSeconds(5));
-            }
-
-
-            if (requestCounter <= 4)
-            {
-                Console.WriteLine($"Request {requestCounter}: HTTP 500 (Internal Server Error)...");
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-
             var items = (await itemRepository.GetAllAsync()).Select(item => item.AsDto());
-            Console.WriteLine($"Request {requestCounter}: HTTP 200 (OK)...");
             return Ok(items);
         }
+
+
+        //[HttpGet("GetAllItem")]
+        //public async Task<ActionResult<IEnumerable<ItemDto>>> GetAllItemAsync()
+        //{
+        //    requestCounter++;
+        //    Console.WriteLine($"Request {requestCounter}: Starting...");
+
+        //    if (requestCounter <= 2)
+        //    {
+        //        Console.WriteLine($"Request {requestCounter}: Delaying...");
+        //        await Task.Delay(TimeSpan.FromSeconds(10));
+        //    }
+
+
+        //    if (requestCounter <= 4)
+        //    {
+        //        Console.WriteLine($"Request {requestCounter}: HTTP 500 (Internal Server Error)...");
+        //        return StatusCode(StatusCodes.Status500InternalServerError);
+        //    }
+
+        //    var items = (await itemRepository.GetAllAsync()).Select(item => item.AsDto());
+        //    Console.WriteLine($"Request {requestCounter}: HTTP 200 (OK)...");
+        //    return Ok(items);
+        //}
 
         [HttpGet("GetItem/{id}")]
         public async Task<ActionResult<ItemDto>> GetItemAsync([FromRoute] Guid id)
@@ -53,6 +65,7 @@ namespace CatalogService.Controllers
                 CreatedDate = DateTimeOffset.UtcNow
             };
             await itemRepository.CreateAsync(item);
+            await publishEndpoint.Publish(new CatalogItemCreated(item.Id, item.Name, item.Description, item.Price));
             return CreatedAtAction(nameof(GetItemAsync), new { id = item.Id }, item);
         }
 
@@ -71,6 +84,12 @@ namespace CatalogService.Controllers
             existingItem.Price = updateItemDto.Price;
 
             await itemRepository.UpdateAsync(existingItem);
+
+            await publishEndpoint.Publish(new CatalogItemUpdated(
+               existingItem.Id,
+               existingItem.Name,
+               existingItem.Description,
+               existingItem.Price));
             return Ok();
         }
 
@@ -85,6 +104,7 @@ namespace CatalogService.Controllers
             }
 
             await itemRepository.RemoveAsync(item.Id);
+            await publishEndpoint.Publish(new CatalogItemDeleted(item.Id));
             return Ok();
         }
     }

@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Common.MongoDB;
+﻿using BuildingBlocks.Common.MassTransit;
+using BuildingBlocks.Common.MongoDB;
 using CatalogService.Entities;
 using Microsoft.OpenApi.Models;
 
@@ -8,7 +9,9 @@ namespace CatalogService
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMongo(configuration).AddMongoRepository<Item>("Items");
+            services.AddMongo(configuration)
+                .AddMongoRepository<Item>("Items")
+                .AddMassTransitWithRabbitMq(configuration);
 
             //services.AddSingleton<MongoDbService>();
             //services.AddScoped<IItemRepository, ItemRepository>();

@@ -12,7 +12,8 @@ namespace InventoryService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMongo(configuration)
-                .AddMongoRepository<InventoryItem>("InventoryItems");
+                .AddMongoRepository<InventoryItem>("InventoryItems")
+                .AddMongoRepository<CatalogItem>("CatalogItems"); ;
 
             AddCatalogClient(services);
 
