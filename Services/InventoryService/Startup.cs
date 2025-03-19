@@ -34,7 +34,14 @@ namespace InventoryService
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CatalogService v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "InventoryService v1"));
+
+                app.UseCors(builder =>
+                {
+                    builder.WithOrigins("AllowedOrigin")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
             }
             app.UseHttpsRedirection();
             app.UseRouting();

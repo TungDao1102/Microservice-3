@@ -1,5 +1,4 @@
 ﻿using BuildingBlocks.Common.Abstractions;
-using InventoryService.Clients;
 using InventoryService.Dtos;
 using InventoryService.Entities;
 using InventoryService.Extensions;
@@ -9,7 +8,9 @@ namespace InventoryService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ItemsController(IRepository<InventoryItem> inventoryItemsRepository, CatalogClient catalogClient) : ControllerBase
+    public class ItemsController(
+        IRepository<InventoryItem> inventoryItemsRepository,
+        IRepository<CatalogItem> catalogItemsRepository) : ControllerBase
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<InventoryItemDto>>> GetAsync(Guid userId)
@@ -19,13 +20,13 @@ namespace InventoryService.Controllers
                 return BadRequest();
             }
 
-            var catalogItems = await catalogClient.GetCatalogItemsAsync();
-
             var inventoryItemEntities = await inventoryItemsRepository.GetAllAsync(item => item.UserId == userId);
+            var itemIds = inventoryItemEntities.Select(item => item.CatalogItemId);
+            var catalogItemEntities = await catalogItemsRepository.GetAllAsync(item => itemIds.Contains(item.Id));
 
             var inventoryItemDtos = inventoryItemEntities.Select(inventoryItem =>
             {
-                var catalogItem = catalogItems.Single(catalogItem => catalogItem.Id == inventoryItem.CatalogItemId);
+                var catalogItem = catalogItemEntities.Single(catalogItem => catalogItem.Id == inventoryItem.CatalogItemId);
                 return inventoryItem.AsDto(catalogItem.Name, catalogItem.Description);
             });
 
