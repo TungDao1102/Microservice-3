@@ -1,6 +1,22 @@
+using IdentityService.Entities;
+using IdentityService.Settings;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+builder.Services.Configure<IdentitySettings>(builder.Configuration.GetSection(nameof(IdentitySettings)))
+               .AddDefaultIdentity<ApplicationUser>()
+               .AddRoles<ApplicationRole>()
+               .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>
+               (
+                   mongoDbSettings.ConnectionString,
+                   serviceSettings.ServiceName
+               );
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
