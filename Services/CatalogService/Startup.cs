@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Common.MassTransit;
+﻿using BuildingBlocks.Common.Identity;
+using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
 using CatalogService.Entities;
 using Microsoft.OpenApi.Models;
@@ -15,6 +16,8 @@ namespace CatalogService
 
             //services.AddSingleton<MongoDbService>();
             //services.AddScoped<IItemRepository, ItemRepository>();
+
+            services.AddJwtBearerAuthentication();
 
             services.AddControllers(options =>
             {
@@ -37,6 +40,7 @@ namespace CatalogService
             }
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

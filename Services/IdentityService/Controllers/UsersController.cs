@@ -1,13 +1,16 @@
 ﻿using IdentityService.Dtos;
 using IdentityService.Entities;
 using IdentityService.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using static Duende.IdentityServer.IdentityServerConstants;
 
 namespace IdentityService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = LocalApi.PolicyName)]
     public class UsersController(UserManager<ApplicationUser> userManager) : ControllerBase
     {
         [HttpGet]

@@ -49,6 +49,9 @@ if (!builder.Environment.IsDevelopment())
 }
 // end Add IdentityServer
 
+// for local api authentication between services, not for external clients
+builder.Services.AddLocalApiAuthentication();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

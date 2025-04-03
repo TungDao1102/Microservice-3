@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Common.MongoDB;
+﻿using BuildingBlocks.Common.Identity;
+using BuildingBlocks.Common.MongoDB;
 using InventoryService.Clients;
 using InventoryService.Entities;
 using Microsoft.OpenApi.Models;
@@ -16,6 +17,7 @@ namespace InventoryService
                 .AddMongoRepository<CatalogItem>("CatalogItems"); ;
 
             AddCatalogClient(services);
+            services.AddJwtBearerAuthentication();
 
             services.AddControllers(options =>
             {
@@ -45,6 +47,7 @@ namespace InventoryService
             }
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
