@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Duende.IdentityServer.Services;
+using IdentityService.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
-using Play.Identity.Service.Entities;
 
 namespace IdentityService.Areas.Identity.Pages.Account
 {
@@ -34,13 +29,13 @@ namespace IdentityService.Areas.Identity.Pages.Account
             var context = await interaction.GetLogoutContextAsync(logoutId);
             if (context?.ShowSignoutPrompt == false)
             {
-                return await this.OnPost(context.PostLogoutRedirectUri);
+                return await this.OnPost(context.PostLogoutRedirectUri ?? string.Empty);
             }
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPost(string returnUrl = null)
+        public async Task<IActionResult> OnPost(string? returnUrl = null)
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
