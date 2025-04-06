@@ -1,7 +1,10 @@
 ﻿using BuildingBlocks.Common.Identity;
+using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
+using GreenPipes;
 using InventoryService.Clients;
 using InventoryService.Entities;
+using InventoryService.Exceptions;
 using Microsoft.OpenApi.Models;
 using Polly;
 using Polly.Timeout;
@@ -14,10 +17,15 @@ namespace InventoryService
         {
             services.AddMongo(configuration)
                 .AddMongoRepository<InventoryItem>("InventoryItems")
-                .AddMongoRepository<CatalogItem>("CatalogItems"); ;
+                .AddMongoRepository<CatalogItem>("CatalogItems")
+                .AddMassTransitWithRabbitMq(configuration, retryConfigurator =>
+                {
+                    retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
+                    retryConfigurator.Ignore(typeof(UnknownItemException));
+                })
+                .AddJwtBearerAuthentication();
 
             AddCatalogClient(services);
-            services.AddJwtBearerAuthentication();
 
             services.AddControllers(options =>
             {

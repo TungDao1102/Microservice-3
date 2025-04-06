@@ -1,10 +1,13 @@
-using System.Security.Cryptography.X509Certificates;
+using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.Settings;
+using GreenPipes;
 using IdentityService.Entities;
+using IdentityService.Exceptions;
 using IdentityService.Settings;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,13 @@ builder.Services.Configure<IdentitySettings>(builder.Configuration.GetSection(na
                    mongoDbSettings?.ConnectionString,
                    serviceSettings?.ServiceName
                );
+
+builder.Services.AddMassTransitWithRabbitMq(builder.Configuration, retryConfigurator =>
+{
+    retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
+    retryConfigurator.Ignore(typeof(UnknownUserException));
+    retryConfigurator.Ignore(typeof(InsufficientFundsException));
+});
 
 // Add IdentityServer
 IdentityServerSettings identityServerSettings = builder.Configuration.GetSection(nameof(IdentityServerSettings)).Get<IdentityServerSettings>() ?? throw new ArgumentNullException();
