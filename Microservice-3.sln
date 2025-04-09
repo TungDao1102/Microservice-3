@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryService", "Service
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService", "Services\IdentityService\IdentityService.csproj", "{17D90CAD-10C5-4220-AA09-349EF53AAC06}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingService", "Services\TradingService\TradingService.csproj", "{E0ECB8DA-B8C8-4E23-B1B3-B371D9EEACDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{17D90CAD-10C5-4220-AA09-349EF53AAC06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17D90CAD-10C5-4220-AA09-349EF53AAC06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17D90CAD-10C5-4220-AA09-349EF53AAC06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0ECB8DA-B8C8-4E23-B1B3-B371D9EEACDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0ECB8DA-B8C8-4E23-B1B3-B371D9EEACDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0ECB8DA-B8C8-4E23-B1B3-B371D9EEACDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0ECB8DA-B8C8-4E23-B1B3-B371D9EEACDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,6 +58,7 @@ Global
 		{98B79AAB-34CC-4ACE-9EF2-32F2C087C2C8} = {927209CC-9FD6-4CE8-A16C-B0FE7F58EF76}
 		{39554BC5-2D2D-4062-AD88-185543FD76DE} = {927209CC-9FD6-4CE8-A16C-B0FE7F58EF76}
 		{17D90CAD-10C5-4220-AA09-349EF53AAC06} = {927209CC-9FD6-4CE8-A16C-B0FE7F58EF76}
+		{E0ECB8DA-B8C8-4E23-B1B3-B371D9EEACDB} = {927209CC-9FD6-4CE8-A16C-B0FE7F58EF76}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {11B16732-52CA-419B-8714-E67ED45448C8}
