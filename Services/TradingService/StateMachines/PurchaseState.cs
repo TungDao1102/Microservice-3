@@ -1,8 +1,9 @@
 ﻿using Automatonymous;
+using MassTransit.Saga;
 
 namespace TradingService.StateMachines
 {
-    public class PurchaseState : SagaStateMachineInstance
+    public class PurchaseState : SagaStateMachineInstance, ISagaVersion
     {
         public Guid CorrelationId { get; set; }
         public string CurrentState { get; set; } = string.Empty;

@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using BuildingBlocks.Common.Identity;
+using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
 using BuildingBlocks.Common.Settings;
 using MassTransit;
@@ -72,7 +73,7 @@ namespace TradingService
                                                   .Get<MongoDbSettings>();
             services.AddMassTransit(configure =>
             {
-                configure.UsingPlayEconomyRabbitMq();
+                configure.UsingMessageBroker(configuration);
                 configure.AddSagaStateMachine<PurchaseStateMachine, PurchaseState>()
                     .MongoDbRepository(x =>
                     {

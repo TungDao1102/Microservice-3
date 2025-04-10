@@ -12,7 +12,7 @@ namespace CatalogService
         {
             services.AddMongo(configuration)
                 .AddMongoRepository<Item>("Items")
-                .AddMassTransitWithRabbitMq(configuration);
+                .AddMassTransitWithMessageBroker(configuration);
 
             //services.AddSingleton<MongoDbService>();
             //services.AddScoped<IItemRepository, ItemRepository>();
