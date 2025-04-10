@@ -81,8 +81,7 @@ namespace TradingService
                         x.DatabaseName = serviceSettings?.ServiceName;
                     });
             });
-
-            services.AddMassTransitHostedService();
+            services.AddGenericRequestClient();
         }
     }
 }

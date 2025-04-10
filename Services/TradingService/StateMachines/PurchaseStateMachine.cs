@@ -10,17 +10,20 @@ namespace TradingService.StateMachines
         public State? Completed { get; }
         public State? Faulted { get; }
         public Event<PurchaseRequested>? PurchaseRequested { get; }
+        public Event<GetPurchaseState>? GetPurchaseState { get; }
 
         public PurchaseStateMachine()
         {
             InstanceState(state => state.CurrentState);
             ConfigureEvents();
             ConfigureInitialState();
+            ConfigureAny();
         }
 
         public void ConfigureEvents()
         {
             Event(() => PurchaseRequested);
+            Event(() => GetPurchaseState);
         }
 
         public void ConfigureInitialState()
@@ -34,10 +37,18 @@ namespace TradingService.StateMachines
                         context.Instance.Quantity = context.Data.Quantity;
                         context.Instance.Received = DateTimeOffset.UtcNow;
                         context.Instance.LastUpdated = context.Instance.Received;
-
                     })
                     .TransitionTo(Accepted)
                 );
+        }
+
+        private void ConfigureAny()
+        {
+            // return type of response when GetPurchaseState is invoked
+            DuringAny(
+                When(GetPurchaseState)
+                    .Respond(x => x.Instance)
+            );
         }
     }
 }

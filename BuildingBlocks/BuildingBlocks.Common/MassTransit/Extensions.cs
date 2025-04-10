@@ -52,6 +52,7 @@ namespace BuildingBlocks.Common.MassTransit
 
             // use package version 7.1.3
             //services.AddMassTransitHostedService();
+            //services.AddGenericRequestClient();
 
             return services;
         }
