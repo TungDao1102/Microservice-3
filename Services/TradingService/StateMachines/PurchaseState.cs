@@ -11,7 +11,7 @@ namespace TradingService.StateMachines
         public Guid ItemId { get; set; }
         public int Quantity { get; set; }
         public DateTimeOffset Received { get; set; }
-        public decimal? PurchaseTotal { get; set; }
+        public decimal PurchaseTotal { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
         public string? ErrorMessage { get; set; }
         public int Version { get; set; }

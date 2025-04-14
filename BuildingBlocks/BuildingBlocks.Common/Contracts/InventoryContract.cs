@@ -1,6 +1,6 @@
 ﻿namespace BuildingBlocks.Common.Contracts
 {
-    public record GrandItems(Guid UserId, Guid CatalogItemId, int Quantity, Guid CorrelationId);
+    public record GrantItems(Guid UserId, Guid CatalogItemId, int Quantity, Guid CorrelationId);
 
     public record InventoryItemsGranted(Guid CorrelationId);
 

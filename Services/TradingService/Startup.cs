@@ -1,11 +1,15 @@
+using System.Reflection;
 using System.Text.Json.Serialization;
+using BuildingBlocks.Common.Contracts;
 using BuildingBlocks.Common.Identity;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
 using BuildingBlocks.Common.Settings;
+using GreenPipes;
 using MassTransit;
 using Microsoft.OpenApi.Models;
 using TradingService.Entities;
+using TradingService.Exceptions;
 using TradingService.StateMachines;
 
 namespace TradingService
@@ -73,15 +77,30 @@ namespace TradingService
                                                   .Get<MongoDbSettings>();
             services.AddMassTransit(configure =>
             {
-                configure.UsingMessageBroker(configuration);
-                configure.AddSagaStateMachine<PurchaseStateMachine, PurchaseState>()
+                configure.UsingMessageBroker(configuration, retryConfigurator =>
+                    {
+                        retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
+                        retryConfigurator.Ignore(typeof(UnknownItemException));
+                    });
+                configure.AddConsumers(Assembly.GetEntryAssembly());
+                configure.AddSagaStateMachine<PurchaseStateMachine, PurchaseState>(sagaConfigurator =>
+                    {
+                        // only send outbox messages when the saga is completed
+                        sagaConfigurator.UseInMemoryOutbox();
+                    })
                     .MongoDbRepository(x =>
                     {
                         x.Connection = mongoDbSettings?.ConnectionString;
                         x.DatabaseName = serviceSettings?.ServiceName;
                     });
             });
-            services.AddGenericRequestClient();
+
+            var queueSettings = configuration.GetSection(nameof(QueueSettings)).Get<QueueSettings>() ?? throw new ArgumentNullException("Queue settings cannot be null");
+
+            // for using Send in state machine or ISendEndpointProvider 
+            EndpointConvention.Map<GrantItems>(new Uri(queueSettings.GrantItemsQueueAddress));
+            EndpointConvention.Map<DebitGil>(new Uri(queueSettings.DebitGilQueueAddress));
+            EndpointConvention.Map<SubtractItems>(new Uri(queueSettings.SubtractItemsQueueAddress));
         }
     }
 }
