@@ -27,6 +27,7 @@ namespace TradingService.StateMachines
             ConfigureAccepted();
             ConfigItemsGranted();
             ConfigFaulted();
+            ConfigCompleted();
         }
 
         public void ConfigureEvents()
@@ -78,6 +79,7 @@ namespace TradingService.StateMachines
         private void ConfigureAccepted()
         {
             During(Accepted,
+                Ignore(PurchaseRequested),
                 When(InventoryItemsGranted)
                     .Then(context =>
                     {
@@ -101,6 +103,8 @@ namespace TradingService.StateMachines
         private void ConfigItemsGranted()
         {
             During(ItemsGranted,
+                Ignore(PurchaseRequested),
+                Ignore(InventoryItemsGranted),
                 When(GilDebited)
                     .Then(context =>
                     {
@@ -125,6 +129,15 @@ namespace TradingService.StateMachines
         private void ConfigFaulted()
         {
             During(Faulted,
+                Ignore(PurchaseRequested),
+                Ignore(InventoryItemsGranted),
+                Ignore(GilDebited)
+            );
+        }
+
+        private void ConfigCompleted()
+        {
+            During(Completed,
                 Ignore(PurchaseRequested),
                 Ignore(InventoryItemsGranted),
                 Ignore(GilDebited)

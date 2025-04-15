@@ -15,11 +15,11 @@ namespace TradingService.Controllers
         IPublishEndpoint publishEndpoint,
         IRequestClient<GetPurchaseState> purchaseClient) : ControllerBase
     {
-        [HttpGet("Status/{correlationId}")]
-        public async Task<IActionResult> GetStatusAsync(Guid correlationId)
+        [HttpGet("Status/{idempotencyId}")]
+        public async Task<IActionResult> GetStatusAsync(Guid idempotencyId)
         {
             Response<PurchaseState> response = await purchaseClient.GetResponse<PurchaseState>(new GetPurchaseState(
-                correlationId));
+                idempotencyId));
 
             PurchaseState purchaseState = response.Message;
 
@@ -40,16 +40,15 @@ namespace TradingService.Controllers
         public async Task<IActionResult> PostAsync(SubmitPurchaseDto purchaseDto)
         {
             var userId = User.FindFirstValue("sub") ?? string.Empty;
-            var correlationId = Guid.NewGuid();
 
             var message = new PurchaseRequested(
                 Guid.Parse(userId),
                 purchaseDto.ItemId,
                 purchaseDto.Quantity,
-                correlationId);
+                purchaseDto.IdempotencyId);
 
             await publishEndpoint.Publish(message);
-            return AcceptedAtAction(nameof(GetStatusAsync), new { correlationId });
+            return AcceptedAtAction(nameof(GetStatusAsync), new { purchaseDto.IdempotencyId });
         }
     }
 }
