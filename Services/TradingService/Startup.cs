@@ -7,9 +7,11 @@ using BuildingBlocks.Common.MongoDB;
 using BuildingBlocks.Common.Settings;
 using GreenPipes;
 using MassTransit;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.OpenApi.Models;
 using TradingService.Entities;
 using TradingService.Exceptions;
+using TradingService.SignalR;
 using TradingService.StateMachines;
 
 namespace TradingService
@@ -26,6 +28,10 @@ namespace TradingService
                     .AddJwtBearerAuthentication();
 
             AddMassTransit(services);
+
+            services.AddSingleton<IUserIdProvider, UserIdProvider>()
+                  .AddSingleton<MessageHub>()
+                  .AddSignalR();
 
             services.AddControllers(options =>
             {
@@ -66,6 +72,7 @@ namespace TradingService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<MessageHub>("/messagehub");
             });
         }
 

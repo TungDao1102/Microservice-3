@@ -1,7 +1,10 @@
-﻿using Automatonymous;
+﻿using System.Diagnostics.Metrics;
+using Automatonymous;
 using BuildingBlocks.Common.Contracts;
+using BuildingBlocks.Common.Settings;
 using MassTransit;
 using TradingService.Activities;
+using TradingService.SignalR;
 
 namespace TradingService.StateMachines
 {
@@ -18,8 +21,26 @@ namespace TradingService.StateMachines
         public Event<Fault<GrantItems>>? GrantItemsFaulted { get; }
         public Event<Fault<DebitGil>>? DebitGilFaulted { get; }
 
-        public PurchaseStateMachine()
+        private readonly MessageHub _hub;
+        private readonly ILogger<PurchaseStateMachine> _logger;
+        private readonly IConfiguration _configuration;
+
+        private readonly Counter<int> purchaseStartedCounter;
+        private readonly Counter<int> purchaseSuccessCounter;
+        private readonly Counter<int> purchaseFailedCounter;
+
+        public PurchaseStateMachine(MessageHub hub, ILogger<PurchaseStateMachine> logger, IConfiguration configuration)
         {
+            _hub = hub;
+            _logger = logger;
+            _configuration = configuration;
+
+            var settings = _configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
+            Meter meter = new(settings?.ServiceName ?? string.Empty);
+            purchaseStartedCounter = meter.CreateCounter<int>("PurchaseStarted");
+            purchaseSuccessCounter = meter.CreateCounter<int>("PurchaseSuccess");
+            purchaseFailedCounter = meter.CreateCounter<int>("PurchaseFailed");
+
             InstanceState(state => state.CurrentState);
             ConfigureEvents();
             ConfigureInitialState();
@@ -51,6 +72,13 @@ namespace TradingService.StateMachines
                         context.Instance.Quantity = context.Data.Quantity;
                         context.Instance.Received = DateTimeOffset.UtcNow;
                         context.Instance.LastUpdated = context.Instance.Received;
+
+                        _logger.LogInformation(
+                         "Calculating total price for purchase with CorrelationId {CorrelationId}...",
+                         context.Instance.CorrelationId);
+                        purchaseStartedCounter.Add(1, new KeyValuePair<string, object?>(
+                            nameof(context.Instance.ItemId),
+                            context.Instance.ItemId));
                     })
                     .Activity(x => x.OfType<CalculatePurchaseTotalActivity>())
                     .Send(context => new GrantItems(
@@ -63,7 +91,17 @@ namespace TradingService.StateMachines
                     {
                         context.Instance.ErrorMessage = context.Exception.Message;
                         context.Instance.LastUpdated = DateTimeOffset.UtcNow;
-                    }).TransitionTo(Faulted))
+
+                        _logger.LogError(
+                               context.Exception,
+                               "Could not calculate the total price of purchase with CorrelationId {CorrelationId}. Error: {ErrorMessage}",
+                               context.Instance.CorrelationId,
+                               context.Instance.ErrorMessage);
+                        purchaseFailedCounter.Add(1, new KeyValuePair<string, object?>(
+                            nameof(context.Instance.ItemId),
+                            context.Instance.ItemId));
+                    }).TransitionTo(Faulted)
+                    .ThenAsync(async context => await _hub.SendStatusAsync(context.Instance)))
                 );
         }
 
@@ -84,6 +122,11 @@ namespace TradingService.StateMachines
                     .Then(context =>
                     {
                         context.Instance.LastUpdated = DateTimeOffset.UtcNow;
+
+                        _logger.LogInformation(
+                            "Items of purchase with CorrelationId {CorrelationId} have been granted to user {UserId}. ",
+                            context.Instance.CorrelationId,
+                            context.Instance.UserId);
                     })
                     .Send(context => new DebitGil(
                         context.Instance.UserId,
@@ -95,8 +138,17 @@ namespace TradingService.StateMachines
                     {
                         context.Instance.ErrorMessage = context.Data.Exceptions.First().Message;
                         context.Instance.LastUpdated = DateTimeOffset.UtcNow;
+
+                        _logger.LogError(
+                          "Could not grant items for purchase with CorrelationId {CorrelationId}. Error: {ErrorMessage}",
+                          context.Instance.CorrelationId,
+                          context.Instance.ErrorMessage);
+                        purchaseFailedCounter.Add(1, new KeyValuePair<string, object?>(
+                            nameof(context.Instance.ItemId),
+                            context.Instance.ItemId));
                     })
                     .TransitionTo(Faulted)
+                    .ThenAsync(async context => await _hub.SendStatusAsync(context.Instance))
             );
         }
 
@@ -109,8 +161,17 @@ namespace TradingService.StateMachines
                     .Then(context =>
                     {
                         context.Instance.LastUpdated = DateTimeOffset.UtcNow;
+
+                        _logger.LogInformation(
+                          "The total price of purchase with CorrelationId {CorrelationId} has been debited from user {UserId}. Purchase complete.",
+                          context.Instance.CorrelationId,
+                          context.Instance.UserId);
+                        purchaseSuccessCounter.Add(1, new KeyValuePair<string, object?>(
+                            nameof(context.Instance.ItemId),
+                            context.Instance.ItemId));
                     })
-               .TransitionTo(Completed),
+                    .TransitionTo(Completed)
+                    .ThenAsync(async context => await _hub.SendStatusAsync(context.Instance)),
                 When(DebitGilFaulted)
                     .Send(context => new SubtractItems(
                         context.Instance.UserId,
@@ -121,8 +182,18 @@ namespace TradingService.StateMachines
                     {
                         context.Instance.ErrorMessage = context.Data.Exceptions.First().Message;
                         context.Instance.LastUpdated = DateTimeOffset.UtcNow;
+
+                        _logger.LogError(
+                           "Could not debit the total price of purchase with CorrelationId {CorrelationId} from user {UserId}. Error: {ErrorMessage}.",
+                           context.Instance.CorrelationId,
+                           context.Instance.UserId,
+                           context.Instance.ErrorMessage);
+                        purchaseFailedCounter.Add(1, new KeyValuePair<string, object?>(
+                            nameof(context.Instance.ItemId),
+                            context.Instance.ItemId));
                     })
                     .TransitionTo(Faulted)
+                    .ThenAsync(async context => await _hub.SendStatusAsync(context.Instance))
                 );
         }
 
