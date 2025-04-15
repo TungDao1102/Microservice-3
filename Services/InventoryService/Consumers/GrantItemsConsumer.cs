@@ -6,11 +6,11 @@ using MassTransit;
 
 namespace InventoryService.Consumers
 {
-    public class GrandItemsConsumer(
+    public class GrantItemsConsumer(
         IRepository<InventoryItem> inventoryItemsRepository,
-        IRepository<CatalogItem> catalogItemsRepository) : IConsumer<GrandItems>
+        IRepository<CatalogItem> catalogItemsRepository) : IConsumer<GrantItems>
     {
-        public async Task Consume(ConsumeContext<GrandItems> context)
+        public async Task Consume(ConsumeContext<GrantItems> context)
         {
             var message = context.Message;
 
