@@ -17,11 +17,30 @@ services:
       - rabbitmqdata:/var/lib/rabbitmq
     hostname: rabbitmq
 
-  # catalogservice:
-  #   image: ${DOCKER_REGISTRY-}catalogservice
-  #   build:
-  #     context: .
-  #     dockerfile: Services/CatalogService/Dockerfile
+  catalogservice:
+    image: ${DOCKER_REGISTRY-}catalogservice
+    build:
+      context: .
+      dockerfile: Services/CatalogService/Dockerfile
+
+  identityservice:
+    image: ${DOCKER_REGISTRY-}identityservice
+    build:
+      context: .
+      dockerfile: Services/IdentityService/Dockerfile
+
+  inventoryservice:
+    image: ${DOCKER_REGISTRY-}inventoryservice
+    build:
+      context: .
+      dockerfile: Services/InventoryService/Dockerfile
+
+  tradingservice:
+    image: ${DOCKER_REGISTRY-}tradingservice
+    build:
+      context: .
+      dockerfile: Services/TradingService/Dockerfile
 
 volumes: 
   mongodbdata:
+  rabbitmqdata:

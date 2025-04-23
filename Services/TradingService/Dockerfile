@@ -13,6 +13,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Services/TradingService/TradingService.csproj", "Services/TradingService/"]
+COPY ["BuildingBlocks/BuildingBlocks.Common/BuildingBlocks.Common.csproj", "BuildingBlocks/BuildingBlocks.Common/"]
 RUN dotnet restore "./Services/TradingService/TradingService.csproj"
 COPY . .
 WORKDIR "/src/Services/TradingService"
