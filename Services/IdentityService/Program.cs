@@ -1,4 +1,5 @@
 using BuildingBlocks.Common.HealthChecks;
+using BuildingBlocks.Common.KeyVaults;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.Settings;
 using GreenPipes;
@@ -78,6 +79,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Host.ConfigureAzureKeyVault();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

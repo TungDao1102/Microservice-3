@@ -1,3 +1,5 @@
+using BuildingBlocks.Common.KeyVaults;
+
 namespace InventoryService
 {
     public class Program
@@ -9,6 +11,7 @@ namespace InventoryService
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAzureKeyVault()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
