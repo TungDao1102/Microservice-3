@@ -7,7 +7,6 @@ using BuildingBlocks.Common.Logging;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
 using BuildingBlocks.Common.Settings;
-using GreenPipes;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.OpenApi.Models;
@@ -97,10 +96,11 @@ namespace TradingService
                         retryConfigurator.Ignore(typeof(UnknownItemException));
                     });
                 configure.AddConsumers(Assembly.GetEntryAssembly());
-                configure.AddSagaStateMachine<PurchaseStateMachine, PurchaseState>(sagaConfigurator =>
+                configure.AddSagaStateMachine<PurchaseStateMachine, PurchaseState>((registrationContext, sagaConfigurator) =>
                     {
                         // only send outbox messages when the saga is completed
-                        sagaConfigurator.UseInMemoryOutbox();
+                        // use IRegistrationContext for avoid Obsolete method
+                        sagaConfigurator.UseInMemoryOutbox(registrationContext);
                     })
                     .MongoDbRepository(x =>
                     {

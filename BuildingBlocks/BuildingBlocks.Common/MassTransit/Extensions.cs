@@ -1,8 +1,5 @@
 ﻿using BuildingBlocks.Common.Settings;
-using GreenPipes;
-using GreenPipes.Configurators;
 using MassTransit;
-using MassTransit.Definition;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -107,7 +104,7 @@ namespace BuildingBlocks.Common.MassTransit
         {
             configure.UsingRabbitMq((context, configurator) =>
             {
-                var configuration = context.GetService<IConfiguration>();
+                var configuration = context.GetRequiredService<IConfiguration>();
                 var serviceSettings = configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
                 var rabbitMQSettings = configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
                 configurator.Host(rabbitMQSettings?.Host);
@@ -128,7 +125,7 @@ namespace BuildingBlocks.Common.MassTransit
         {
             configure.UsingAzureServiceBus((context, configurator) =>
             {
-                var configuration = context.GetService<IConfiguration>();
+                var configuration = context.GetRequiredService<IConfiguration>();
                 var serviceSettings = configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
                 var serviceBusSettings = configuration.GetSection(nameof(ServiceBusSettings)).Get<ServiceBusSettings>();
                 configurator.Host(serviceBusSettings?.ConnectionString);
