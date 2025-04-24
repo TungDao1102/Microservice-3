@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using BuildingBlocks.Common.Contracts;
 using BuildingBlocks.Common.HealthChecks;
 using BuildingBlocks.Common.Identity;
+using BuildingBlocks.Common.Logging;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
 using BuildingBlocks.Common.Settings;
@@ -35,6 +36,8 @@ namespace TradingService
                   .AddSignalR();
 
             services.AddHealthChecks().AddMongoDbCheck(configuration);
+
+            services.AddSeqLogging(configuration);
 
             services.AddControllers(options =>
             {

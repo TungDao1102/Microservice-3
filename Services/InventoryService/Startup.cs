@@ -1,5 +1,6 @@
 ﻿using BuildingBlocks.Common.HealthChecks;
 using BuildingBlocks.Common.Identity;
+using BuildingBlocks.Common.Logging;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
 using GreenPipes;
@@ -29,6 +30,8 @@ namespace InventoryService
             AddCatalogClient(services);
 
             services.AddHealthChecks().AddMongoDbCheck(configuration);
+
+            services.AddSeqLogging(configuration);
 
             services.AddControllers(options =>
             {

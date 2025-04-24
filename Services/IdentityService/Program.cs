@@ -1,11 +1,13 @@
 using BuildingBlocks.Common.HealthChecks;
 using BuildingBlocks.Common.KeyVaults;
+using BuildingBlocks.Common.Logging;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.Settings;
 using GreenPipes;
 using IdentityService.Entities;
 using IdentityService.Exceptions;
 using IdentityService.Settings;
+using Microsoft.AspNetCore.HttpOverrides;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
@@ -58,6 +60,7 @@ var identityServerBuilder = builder.Services.AddIdentityServer(options =>
 
 if (!builder.Environment.IsDevelopment())
 {
+    // ssl certificate
     var identitySettings = builder.Configuration.GetSection(nameof(IdentitySettings))
                                         .Get<IdentitySettings>() ?? throw new ArgumentNullException();
     var cert = X509Certificate2.CreateFromPemFile(
@@ -73,11 +76,19 @@ if (!builder.Environment.IsDevelopment())
 builder.Services.AddLocalApiAuthentication();
 
 builder.Services.AddHealthChecks().AddMongoDbCheck(builder.Configuration);
+builder.Services.AddSeqLogging(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 builder.Host.ConfigureAzureKeyVault();
 var app = builder.Build();
@@ -98,6 +109,17 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseHttpsRedirection();
+app.UseForwardedHeaders();
+
+app.Use((context, next) =>
+{
+    // now path base is https://example.com/auth/ instead of https://example.com/
+    var identitySettings = builder.Configuration.GetSection(nameof(IdentitySettings))
+                                        .Get<IdentitySettings>();
+    context.Request.PathBase = new PathString(identitySettings?.PathBase);
+    return next();
+});
+
 app.UseRouting();
 
 app.UseIdentityServer();
