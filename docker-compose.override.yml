@@ -9,6 +9,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
+      - MongoDbSettings__Host=mongo
     ports:
       - "5051:8080"
       - "5001:8081"
@@ -21,6 +22,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
+      - MongoDbSettings__Host=mongo
     ports:
       - "5053:8080"
       - "5003:8081"
@@ -35,6 +37,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
+      - MongoDbSettings__Host=mongo
     ports:
       - "5055:8080"
       - "5005:8081"
@@ -49,6 +52,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
+      - MongoDbSettings__Host=mongo
     ports:
       - "5057:8080"
       - "5007:8081"

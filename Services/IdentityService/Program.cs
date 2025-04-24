@@ -1,3 +1,4 @@
+using BuildingBlocks.Common.HealthChecks;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.Settings;
 using GreenPipes;
@@ -70,6 +71,8 @@ if (!builder.Environment.IsDevelopment())
 // for local api authentication between services, not for external clients
 builder.Services.AddLocalApiAuthentication();
 
+builder.Services.AddHealthChecks().AddMongoDbCheck(builder.Configuration);
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -100,5 +103,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapRazorPages();
+app.MapCustomHealthChecks();
 
 app.Run();

@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
 using BuildingBlocks.Common.Contracts;
+using BuildingBlocks.Common.HealthChecks;
 using BuildingBlocks.Common.Identity;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
@@ -32,6 +33,8 @@ namespace TradingService
             services.AddSingleton<IUserIdProvider, UserIdProvider>()
                   .AddSingleton<MessageHub>()
                   .AddSignalR();
+
+            services.AddHealthChecks().AddMongoDbCheck(configuration);
 
             services.AddControllers(options =>
             {
@@ -73,6 +76,7 @@ namespace TradingService
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<MessageHub>("/messagehub");
+                endpoints.MapCustomHealthChecks();
             });
         }
 

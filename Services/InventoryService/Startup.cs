@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Common.Identity;
+﻿using BuildingBlocks.Common.HealthChecks;
+using BuildingBlocks.Common.Identity;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
 using GreenPipes;
@@ -26,6 +27,8 @@ namespace InventoryService
                 .AddJwtBearerAuthentication();
 
             AddCatalogClient(services);
+
+            services.AddHealthChecks().AddMongoDbCheck(configuration);
 
             services.AddControllers(options =>
             {
@@ -60,6 +63,7 @@ namespace InventoryService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapCustomHealthChecks();
             });
         }
 

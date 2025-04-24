@@ -22,24 +22,36 @@ services:
     build:
       context: .
       dockerfile: Services/CatalogService/Dockerfile
+    depends_on:
+      - mongo
+      - rabbitmq
 
   identityservice:
     image: ${DOCKER_REGISTRY-}identityservice
     build:
       context: .
       dockerfile: Services/IdentityService/Dockerfile
+    depends_on:
+      - mongo
+      - rabbitmq
 
   inventoryservice:
     image: ${DOCKER_REGISTRY-}inventoryservice
     build:
       context: .
       dockerfile: Services/InventoryService/Dockerfile
+    depends_on:
+      - mongo
+      - rabbitmq
 
   tradingservice:
     image: ${DOCKER_REGISTRY-}tradingservice
     build:
       context: .
       dockerfile: Services/TradingService/Dockerfile
+    depends_on:
+      - mongo
+      - rabbitmq
 
 volumes: 
   mongodbdata:

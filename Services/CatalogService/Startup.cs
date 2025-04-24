@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Common.Identity;
+﻿using BuildingBlocks.Common.HealthChecks;
+using BuildingBlocks.Common.Identity;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
 using CatalogService.Entities;
@@ -18,6 +19,9 @@ namespace CatalogService
             //services.AddScoped<IItemRepository, ItemRepository>();
 
             services.AddJwtBearerAuthentication();
+
+            services.AddHealthChecks()
+                .AddMongoDbCheck(configuration);
 
             services.AddControllers(options =>
             {
@@ -45,6 +49,7 @@ namespace CatalogService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapCustomHealthChecks();
             });
         }
     }
