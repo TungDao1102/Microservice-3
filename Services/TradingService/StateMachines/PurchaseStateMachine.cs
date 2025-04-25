@@ -66,9 +66,9 @@ namespace TradingService.StateMachines
                 When(PurchaseRequested)
                     .Then(context =>
                     {
-                        context.Saga.UserId = context.Data.UserId;
-                        context.Saga.ItemId = context.Data.ItemId;
-                        context.Saga.Quantity = context.Data.Quantity;
+                        context.Saga.UserId = context.Message.UserId;
+                        context.Saga.ItemId = context.Message.ItemId;
+                        context.Saga.Quantity = context.Message.Quantity;
                         context.Saga.Received = DateTimeOffset.UtcNow;
                         context.Saga.LastUpdated = context.Saga.Received;
 
@@ -135,7 +135,7 @@ namespace TradingService.StateMachines
                 When(GrantItemsFaulted)
                     .Then(context =>
                     {
-                        context.Saga.ErrorMessage = context.Data.Exceptions.First().Message;
+                        context.Saga.ErrorMessage = context.Message.Exceptions.First().Message;
                         context.Saga.LastUpdated = DateTimeOffset.UtcNow;
 
                         _logger.LogError(

@@ -3,6 +3,7 @@ using BuildingBlocks.Common.Identity;
 using BuildingBlocks.Common.Logging;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
+using BuildingBlocks.Common.OpenTelemetry;
 using InventoryService.Clients;
 using InventoryService.Entities;
 using InventoryService.Exceptions;
@@ -32,6 +33,7 @@ namespace InventoryService
             services.AddHealthChecks().AddMongoDbCheck(configuration);
 
             services.AddSeqLogging(configuration);
+            services.AddTracingAndMetrics(configuration);
 
             services.AddControllers(options =>
             {

@@ -2,6 +2,7 @@ using BuildingBlocks.Common.HealthChecks;
 using BuildingBlocks.Common.KeyVaults;
 using BuildingBlocks.Common.Logging;
 using BuildingBlocks.Common.MassTransit;
+using BuildingBlocks.Common.OpenTelemetry;
 using BuildingBlocks.Common.Settings;
 using IdentityService.Entities;
 using IdentityService.Exceptions;
@@ -77,6 +78,7 @@ builder.Services.AddLocalApiAuthentication();
 
 builder.Services.AddHealthChecks().AddMongoDbCheck(builder.Configuration);
 builder.Services.AddSeqLogging(builder.Configuration);
+builder.Services.AddTracingAndMetrics(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

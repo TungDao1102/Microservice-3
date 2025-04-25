@@ -2,6 +2,7 @@
 using BuildingBlocks.Common.Identity;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
+using BuildingBlocks.Common.OpenTelemetry;
 using CatalogService.Entities;
 using Microsoft.OpenApi.Models;
 
@@ -22,6 +23,8 @@ namespace CatalogService
 
             services.AddHealthChecks()
                 .AddMongoDbCheck(configuration);
+
+            services.AddTracingAndMetrics(configuration);
 
             services.AddControllers(options =>
             {

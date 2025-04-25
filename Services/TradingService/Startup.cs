@@ -6,6 +6,7 @@ using BuildingBlocks.Common.Identity;
 using BuildingBlocks.Common.Logging;
 using BuildingBlocks.Common.MassTransit;
 using BuildingBlocks.Common.MongoDB;
+using BuildingBlocks.Common.OpenTelemetry;
 using BuildingBlocks.Common.Settings;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
@@ -37,6 +38,7 @@ namespace TradingService
             services.AddHealthChecks().AddMongoDbCheck(configuration);
 
             services.AddSeqLogging(configuration);
+            services.AddTracingAndMetrics(configuration);
 
             services.AddControllers(options =>
             {
