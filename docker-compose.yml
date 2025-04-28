@@ -39,6 +39,15 @@ services:
       - 14268:14268 # Http api port
       - 16686:16686 # UI Port
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./Infrastructures/prometheus/otel.yml:/etc/prometheus/prometheus.yml
+      - prometheusdata:/prometheus
+
   catalogservice:
     image: ${DOCKER_REGISTRY-}catalogservice
     build:
@@ -79,3 +88,4 @@ volumes:
   mongodbdata:
   rabbitmqdata:
   seqdata:
+  prometheusdata:

@@ -18,8 +18,6 @@ namespace BuildingBlocks.Common.OpenTelemetry
                                                    .Get<ServiceSettings>();
             var jaegerSettings = configuration.GetSection(nameof(JaegerSettings))
                                                              .Get<JaegerSettings>();
-            Console.WriteLine(serviceSettings.ServiceName);
-
             services.AddOpenTelemetry().WithTracing(config =>
             {
                 config.AddSource(serviceSettings?.ServiceName ?? string.Empty)
@@ -43,7 +41,12 @@ namespace BuildingBlocks.Common.OpenTelemetry
                 .AddAspNetCoreInstrumentation()
                 .AddConsoleExporter()
                 //.AddPrometheusExporter() in OpenTelemetry.Exporter.Prometheus.AspNetCore but under development
-                .AddOtlpExporter(); // use for production
+                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                {
+                    exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
+                }); // use for production
             });
             services.AddConsumeObserver<ConsumeObserver>();
             return services;
