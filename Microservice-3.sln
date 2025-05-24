@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService", "Services
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingService", "Services\TradingService\TradingService.csproj", "{E0ECB8DA-B8C8-4E23-B1B3-B371D9EEACDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservice-3.AppHost", "Orchestrations\Microservice-3.AppHost\Microservice-3.AppHost.csproj", "{236EF56F-435C-4668-84EF-907023EF39F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{E0ECB8DA-B8C8-4E23-B1B3-B371D9EEACDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0ECB8DA-B8C8-4E23-B1B3-B371D9EEACDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0ECB8DA-B8C8-4E23-B1B3-B371D9EEACDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{236EF56F-435C-4668-84EF-907023EF39F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{236EF56F-435C-4668-84EF-907023EF39F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{236EF56F-435C-4668-84EF-907023EF39F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{236EF56F-435C-4668-84EF-907023EF39F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
